@@ -1,0 +1,32 @@
+{
+  "name": "blockify/pattern-editor",
+  "description": "Block Patterns Editor",
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "Blockify",
+      "homepage": "https://blockifywp.com"
+    }
+  ],
+  "type": "wordpress-plugin",
+  "scripts": {
+    "install:phpcs": "Dealerdirect\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\Plugin::run",
+    "phpcs": "phpcs -s",
+    "phpcbf": "phpcbf",
+    "pot": "wp i18n make-pot ./ languages/pattern-editor.pot --exclude='wp,wp-content,vendor,tests,node_modules,build,src'",
+    "zip": "rm -Rf ../../pattern-editor.zip && zip -r ../../pattern-editor.zip assets/ includes/ languages/ pattern-editor.php readme.txt"
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    },
+    "sort-packages": true
+  },
+  "require": {
+    "php": ">=7.4"
+  },
+  "require-dev": {
+    "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
+    "wp-coding-standards/wpcs": "^2.3"
+  }
+}
