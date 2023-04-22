@@ -4,7 +4,7 @@ Donate link: https://blockifywp.com/
 Tags: pattern, editor, block, gutenberg, block editor, blockify
 Requires at least: 6.1
 Tested up to: 6.1
-Stable tag: trunk
+Stable tag: 0.0.3
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -42,6 +42,14 @@ This plugin is designed to be used by developers and theme authors. It is not in
 From the Block Patterns admin page, click on the "Screen Options" tab in the top right corner of the page. You will see two text fields for the export and import directories. You can change the path to the directory where you want to save your patterns.
 
 == ChangeLog ==
+
+= 0.0.3 - 2 April 2023 =
+
+* Update: Stable version
+
+= 0.0.2 - 21 March 2023 =
+
+* Remove: Navigation menu ref attribute
 
 = 0.0.1 - 21 March 2023 =
 

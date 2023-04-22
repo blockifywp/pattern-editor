@@ -190,19 +190,19 @@ EOF;
  *
  * @param string $html The HTML content.
  *
- * @since 1.0.0
+ * @since 0.0.1
  *
  * @return string
  */
 function replace_nav_menu_refs( string $html ): string {
-	preg_match( '/"ref":(\d+),/i', $html, $matches );
+	$ref = str_between(
+		'"ref":',
+		',',
+		$html
+	);
 
-	if ( $matches ) {
-		foreach ( $matches as $match ) {
-
-			// Not working.
-			$html = str_replace( 'ref:' . $match, '', $html );
-		}
+	if ( $ref ) {
+		$html = str_replace( $ref, '', $html );
 	}
 
 	return $html;

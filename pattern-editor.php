@@ -5,7 +5,7 @@
  * Description:  Import, export and edit patterns in the block editor and save directly to your theme.
  * Author:       Blockify
  * Author URI:   https://blockifywp.com/
- * Version:      0.0.1
+ * Version:      0.0.3
  * License:      GPLv2-or-Later
  * Requires WP:  6.1
  * Requires PHP: 7.4
@@ -58,6 +58,7 @@ add_action( 'after_setup_theme', NS . 'setup', 9 );
  */
 function setup(): void {
 	$files = [
+		'utility',
 		'admin',
 		'cpt',
 		'export',
