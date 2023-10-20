@@ -4,28 +4,34 @@ declare( strict_types=1 );
 
 namespace Blockify\PatternEditor;
 
+use function add_action;
 use function add_filter;
+use function Blockify\Theme\str_contains_any;
 use function dirname;
 use function do_blocks;
 use function file_exists;
+use function function_exists;
 use function get_post_field;
 use function get_stylesheet_directory;
 use function get_template_directory;
 use function get_the_ID;
+use function in_array;
 use function is_page;
 use function is_singular;
 use function locate_block_template;
 use function ob_get_clean;
 use function ob_start;
+use function show_admin_bar;
+use function str_contains;
 use function WP_Filesystem;
 
-add_filter( 'template_include', NS . 'single_block_pattern_template' );
+//add_filter( 'template_include', NS . 'single_block_pattern_template' );
 /**
  * Filter pattern template.
  *
- * @param string $template Template slug.
- *
  * @since 0.4.0
+ *
+ * @param string $template Template slug.
  *
  * @return string
  */
@@ -54,23 +60,35 @@ function single_block_pattern_template( string $template ): string {
 	}
 
 	if ( is_singular( 'block_pattern' ) ) {
-		$template = locate_block_template( $file, 'blank', [] );
+		$slug          = get_post_field( 'post_name', get_the_ID() );
+		$template_slug = 'blank';
+
+		if ( str_contains_any( $slug, 'page-' ) ) {
+			$template_slug = 'full-width';
+		}
+
+		$template = locate_block_template( $file, $template_slug, [] );
 	}
 
 	return $template;
 }
 
-add_filter( 'the_content', NS . 'render_auto_page_pattern' );
+//add_filter( 'the_content', NS . 'render_auto_page_pattern' );
 /**
  * Automatically display patterns for pages without content and matching slug.
  *
- * @param string $content Page content.
- *
  * @since 1.0.0
+ *
+ * @param string $content Page content.
  *
  * @return string
  */
 function render_auto_page_pattern( string $content ): string {
+
+	if ( function_exists( 'Blockify\\Pro\\render_auto_page_pattern' ) ) {
+		return $content;
+	}
+
 	if ( ! $content && is_page() ) {
 		$page_slug = get_post_field( 'post_name', get_the_ID() );
 		$file_name = get_stylesheet_directory() . "/patterns/page-$page_slug.php";
@@ -89,4 +107,19 @@ function render_auto_page_pattern( string $content ): string {
 	}
 
 	return $content;
+}
+
+add_action( 'wp', NS . 'hide_admin_bar' );
+/**
+ * Hide admin bar on single block pattern.
+ *
+ * @since 1.0.0
+ *
+ * @return void
+ */
+function hide_admin_bar(): void {
+	if ( is_singular( 'block_pattern' ) ) {
+		add_filter( 'show_admin_bar', '__return_false' );
+		show_admin_bar( false );
+	}
 }

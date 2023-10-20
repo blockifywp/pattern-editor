@@ -103,7 +103,7 @@ add_action( 'manage_block_pattern_posts_custom_column', NS . 'pattern_preview_co
  */
 function pattern_preview_column( string $column, int $post_id ): void {
 	$post_name = get_post_field( 'post_name', $post_id );
-	$url       = home_url() . '/block_pattern/' . $post_name;
+	$url       = home_url() . '/patterns/' . $post_name;
 
 	switch ( $column ) {
 		case 'preview':
@@ -164,6 +164,14 @@ function add_quick_links(): void {
 		[
 			'label' => __( 'Patterns', 'blockify' ),
 			'url'   => admin_url( 'edit.php?post_type=block_pattern&orderby=title&order=asc' ),
+		],
+		[
+			'label' => __( 'Pattern Categories', 'blockify' ),
+			'url'   => admin_url( 'edit-tags.php?taxonomy=pattern_category' ),
+		],
+		[
+			'label' => __( 'Add Pattern', 'blockify' ),
+			'url'   => admin_url( 'post-new.php?post_type=block_pattern' ),
 		],
 	];
 

@@ -64,6 +64,7 @@ function setup(): void {
 		'export',
 		'import',
 		'template',
+		'block',
 	];
 
 	foreach ( $files as $file ) {

@@ -26,9 +26,11 @@ use function preg_match_all;
 use function sanitize_text_field;
 use function str_contains;
 use function str_replace;
+use function str_starts_with;
 use function trailingslashit;
 use function trim;
 use function WP_Filesystem;
+use function wp_get_global_settings;
 use function wp_mkdir_p;
 use function wp_nonce_url;
 use function wp_parse_url;
@@ -44,22 +46,22 @@ add_action( 'admin_post_blockify_export_patterns', NS . 'export_patterns' );
  * @return void
  */
 function export_patterns(): void {
-	$block_patterns = get_posts(
+	$wp_blocks = get_posts(
 		[
-			'post_type'      => 'block_pattern',
-			'posts_per_page' => - 1,
+			'post_type'      => 'wp_block',
+			'posts_per_page' => -1,
 		]
 	);
 
-	foreach ( $block_patterns as $block_pattern ) {
-		export_pattern( $block_pattern->ID, $block_pattern, true );
+	foreach ( $wp_blocks as $wp_block ) {
+		export_pattern( $wp_block->ID, $wp_block, true );
 	}
 
 	$action = 'blockify_export_patterns';
 
 	wp_safe_redirect(
 		wp_nonce_url(
-			admin_url( "edit.php?post_type=block_pattern&=$action=true" ),
+			admin_url( "edit.php?post_type=wp_block&=$action=true" ),
 			$action,
 		)
 	);
@@ -82,28 +84,55 @@ function pattern_export_success_notice(): void {
 
 	$post_type = sanitize_text_field( wp_unslash( $_GET['post_type'] ?? '' ) );
 
-	if ( $post_type !== 'block_pattern' ) {
+	if ( $post_type !== 'wp_block' ) {
 		return;
 	}
 
 	?>
-	<div class="notice notice-success is-dismissible">
-		<p>
+    <div class="notice notice-success is-dismissible">
+        <p>
 			<?php esc_html_e( 'Patterns successfully exported.', 'pattern-editor' ); ?>
-		</p>
-	</div>
+        </p>
+    </div>
 	<?php
 }
 
-add_filter( 'save_post_block_pattern', NS . 'export_pattern', 10, 3 );
+/**
+ * Builds the header comment for the pattern.
+ *
+ * @since 1.0.0
+ *
+ * @param string $title       The title of the pattern.
+ * @param string $slug        The slug of the pattern.
+ * @param string $category    The category of the pattern.
+ * @param string $block_types The block types of the pattern.
+ *
+ * @return string
+ */
+function build_pattern_header_comment( string $title, string $slug, string $category, string $block_types ): string {
+	return <<<EOF
+<?php
+/**
+ * Title: $title
+ * Slug: $slug
+ * Categories: $category
+ * $block_types
+ */
+?>
+EOF;
+}
+
+add_filter( 'save_post_wp_block', NS . 'export_pattern', 10, 3 );
 /**
  * Handles export pattern request.
  *
- * @param int     $post_ID The post ID.
- * @param WP_Post $post    The post object.
- * @param bool    $update  Whether this is an existing post being updated or not.
- *
  * @since 0.0.1
+ *
+ * @param WP_Post $post    The post object.
+ * @param bool    $update  Whether this is an existing post being updated or
+ *                         not.
+ *
+ * @param int     $post_ID The post ID.
  *
  * @return integer
  */
@@ -127,13 +156,18 @@ function export_pattern( int $post_ID, WP_Post $post, bool $update ): int {
 		return $post_ID;
 	}
 
-	$stylesheet  = get_stylesheet();
-	$default_dir = $stylesheet === 'blockify' ? 'themes/blockify/patterns/default' : "themes/$stylesheet/patterns";
-	$content_dir = dirname( get_template_directory(), 2 );
-	$default_dir = apply_filters( 'blockify_pattern_export_dir', $default_dir );
-	$pattern_dir = $content_dir . DS . trailingslashit( $default_dir );
-	$content     = replace_nav_menu_refs( $post->post_content );
-	$content     = replace_image_paths( $content, $content_dir );
+	$stylesheet   = get_stylesheet();
+	$content_dir  = dirname( get_template_directory(), 2 );
+	$default_dir  = "themes/$stylesheet/patterns";
+	$filtered_dir = apply_filters( 'blockify_pattern_export_dir', $default_dir, $post );
+	$pattern_dir  = trailingslashit( $content_dir . DS . $filtered_dir );
+
+	$content = replace_nav_menu_refs( $post->post_content );
+	$content = replace_image_paths( $content, $content_dir );
+	$content = apply_filters( 'blockify_pattern_export_content', $content, $post, $category );
+	$content = str_replace( [ '<', '>' ], [ "\n<", ">\n" ], $content );
+	$content = preg_replace( "/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $content );
+
 	$block_types = '';
 
 	if ( $category === 'page' ) {
@@ -152,20 +186,12 @@ function export_pattern( int $post_ID, WP_Post $post, bool $update ): int {
 		$block_types = 'Block Types: ' . rtrim( $block_types, ',' );
 	}
 
-	$data = <<<EOF
-<?php
-/**
- * Title: $post->post_title
- * Slug: $post->post_name
- * Categories: $category
- * $block_types
- */
-?>
-$content
-EOF;
-
 	if ( ! file_exists( $pattern_dir ) ) {
 		wp_mkdir_p( $pattern_dir );
+	}
+
+	if ( ! file_exists( $pattern_dir . $category ) ) {
+		wp_mkdir_p( $pattern_dir . $category );
 	}
 
 	global $wp_filesystem;
@@ -175,10 +201,46 @@ EOF;
 		WP_Filesystem();
 	}
 
+	$category_title = ucwords( str_replace( '-', ' ', $category ) );
+	$title          = str_replace( $category_title . ' ', '', $post->post_title );
+	$slug           = str_replace( $category . '-', '', $post->post_name );
+
 	$wp_filesystem->put_contents(
-		$pattern_dir . $post->post_name . '.php',
-		$data
+		$pattern_dir . $category . DS . $slug . '.php',
+		build_pattern_header_comment(
+			$title,
+			$slug,
+			$category,
+			$block_types
+		) . "\n" . $content
 	);
+
+	$has_variations = str_starts_with( $post->post_content, '<!-- wp:group ' );
+	$has_variations = false;
+
+	if ( $has_variations ) {
+		$global_settings = wp_get_global_settings();
+		$default_style   = isset( $global_settings['custom']['lightMode'] ) ? 'dark' : 'light';
+		$alt_style       = $default_style === 'dark' ? 'light' : 'dark';
+		$labels          = [
+			'dark'  => __( 'Dark', 'pattern-editor' ),
+			'light' => __( 'Light', 'pattern-editor' ),
+		];
+
+		$wp_filesystem->put_contents(
+			$pattern_dir . $category . DS . $slug . '-' . $alt_style . '.php',
+			build_pattern_header_comment(
+				$title . ' ' . $labels[ $alt_style ],
+				$slug . '-' . $alt_style,
+				$category,
+				$block_types
+			) . "\n" . str_replace_first(
+				'wp-block-group ',
+				'wp-block-group is-style-' . $alt_style . ' ',
+				$content
+			)
+		);
+	}
 
 	flush_rewrite_rules();
 
@@ -188,9 +250,9 @@ EOF;
 /**
  * Removes nav menu references from pattern content.
  *
- * @param string $html The HTML content.
- *
  * @since 0.0.1
+ *
+ * @param string $html The HTML content.
  *
  * @return string
  */
@@ -211,10 +273,11 @@ function replace_nav_menu_refs( string $html ): string {
 /**
  * Replaces image paths with theme URI.
  *
- * @param string $html        The HTML content.
+ * @since 1.0.0
+ *
  * @param string $content_dir The content directory.
  *
- * @since 1.0.0
+ * @param string $html        The HTML content.
  *
  * @return string
  */
@@ -268,12 +331,16 @@ function replace_image_paths( string $html, string $content_dir ): string {
 
 		if ( $type === 'svg' ) {
 			$sub_dir = 'svg';
-		} elseif ( $type === 'mp4' || $type === 'mov' ) {
-			$sub_dir = 'video';
-		} elseif ( $type === 'gif' ) {
-			$sub_dir = 'gif';
 		} else {
-			$sub_dir = 'img';
+			if ( $type === 'mp4' || $type === 'mov' ) {
+				$sub_dir = 'video';
+			} else {
+				if ( $type === 'gif' ) {
+					$sub_dir = 'gif';
+				} else {
+					$sub_dir = 'img';
+				}
+			}
 		}
 
 		$new_dir = $asset_dir . $sub_dir . DS;

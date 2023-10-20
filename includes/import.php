@@ -11,7 +11,6 @@ use function esc_html_e;
 use function explode;
 use function flush_rewrite_rules;
 use function get_page_by_path;
-use function get_page_by_title;
 use function get_stylesheet_directory;
 use function glob;
 use function ob_get_clean;
@@ -64,10 +63,6 @@ function import_patterns(): void {
 		];
 
 		if ( get_page_by_path( $name, OBJECT, 'block_pattern' ) ) {
-			continue;
-		}
-
-		if ( get_page_by_title( $title, OBJECT, 'block_pattern' ) ) {
 			continue;
 		}
 

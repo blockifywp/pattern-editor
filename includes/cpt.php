@@ -72,6 +72,11 @@ function register_pattern_cpt() : void {
 	register_post_type( 'block_pattern', $args );
 }
 
+// Gutenberg compat.
+if ( function_exists( 'filter_block_pattern_response' ) ) {
+	remove_filter( 'rest_prepare_block_pattern', 'filter_block_pattern_response' );
+}
+
 add_action( 'init', NS . 'register_pattern_category_taxonomy' );
 /**
  * Registers block pattern category taxonomy.
@@ -116,9 +121,4 @@ function register_pattern_category_taxonomy() : void {
 	];
 
 	register_taxonomy( 'pattern_category', [ 'block_pattern' ], $args );
-}
-
-// Gutenberg compat.
-if ( function_exists( 'filter_block_pattern_response' ) ) {
-	remove_filter( 'rest_prepare_block_pattern', 'filter_block_pattern_response' );
 }

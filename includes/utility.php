@@ -4,6 +4,14 @@ declare( strict_types=1 );
 
 namespace Blockify\PatternEditor;
 
+use DOMDocument;
+use function explode;
+use function implode;
+use function str_replace;
+use function strlen;
+use function strpos;
+use function substr;
+
 /**
  * Returns part of string between two strings.
  *
@@ -38,4 +46,19 @@ function str_between( string $start, string $end, string $string, bool $omit = f
 	}
 
 	return $string;
+}
+
+/**
+ * Replace first occurrence of a string.
+ *
+ * @since 1.0.0
+ *
+ * @param string $search  String to search for.
+ * @param string $replace String to replace with.
+ * @param string $string  String to sanitize.
+ *
+ * @return string
+ */
+function str_replace_first( string $search, string $replace, string $subject ): string {
+	return implode( $replace, explode( $search, $subject, 2 ) );
 }
