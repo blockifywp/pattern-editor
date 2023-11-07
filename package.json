@@ -1,0 +1,24 @@
+{
+  "name": "blockify-dev",
+  "description": "Blockify Cloud plugin.",
+  "author": "Blockify",
+  "license": "GPL-2.0-or-later",
+  "main": "build/index.js",
+  "scripts": {
+    "pot": "wp i18n make-pot ./ languages/blockify-dev.pot --exclude='wp,wp-content,vendor,tests,node_modules,build,assets,src'",
+    "zip": "rm -Rf ../../blockify-dev.zip && zip -r ../../blockify-dev.zip assets/ build/ includes/ languages/ patterns/ screenshots/ templates/ blockify-dev.php",
+    "css": "npm run build:css",
+    "js": "npm run build:js",
+    "build:js": "wp-scripts build",
+    "build:css": "node-sass --output-style compressed --recursive -o assets/css src/scss && rm -Rf assets/css/abstracts",
+    "img:install": "npm i -g capture-website-cli && chmod +x bin/screenshots",
+    "img": "sh bin/screenshots false false",
+    "img:dark": "sh bin/screenshots true",
+    "img:mobile": "sh bin/screenshots false true",
+    "img:theme": "sh bin/screenshots true false"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "^26.10.0",
+    "node-sass": "^8.0.0"
+  }
+}

@@ -15,14 +15,12 @@ use function get_post_field;
 use function get_stylesheet_directory;
 use function get_template_directory;
 use function get_the_ID;
-use function in_array;
 use function is_page;
 use function is_singular;
 use function locate_block_template;
 use function ob_get_clean;
 use function ob_start;
 use function show_admin_bar;
-use function str_contains;
 use function WP_Filesystem;
 
 //add_filter( 'template_include', NS . 'single_block_pattern_template' );
@@ -59,7 +57,7 @@ function single_block_pattern_template( string $template ): string {
 		$wp_filesystem->put_contents( $file, $data );
 	}
 
-	if ( is_singular( 'block_pattern' ) ) {
+	if ( is_singular( 'wp_block' ) ) {
 		$slug          = get_post_field( 'post_name', get_the_ID() );
 		$template_slug = 'blank';
 
@@ -118,7 +116,7 @@ add_action( 'wp', NS . 'hide_admin_bar' );
  * @return void
  */
 function hide_admin_bar(): void {
-	if ( is_singular( 'block_pattern' ) ) {
+	if ( is_singular( 'wp_block' ) ) {
 		add_filter( 'show_admin_bar', '__return_false' );
 		show_admin_bar( false );
 	}

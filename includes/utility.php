@@ -1,64 +1,90 @@
 <?php
 
-declare( strict_types=1 );
-
 namespace Blockify\PatternEditor;
 
-use DOMDocument;
-use function explode;
-use function implode;
-use function str_replace;
-use function strlen;
-use function strpos;
-use function substr;
+use WP_Post;
+use function dirname;
+use function get_post;
+use function is_null;
+use function plugin_dir_url;
+use function trailingslashit;
 
 /**
- * Returns part of string between two strings.
- *
- * @since 0.0.1
- *
- * @param string $start  Start string.
- * @param string $end    End string.
- * @param string $string String content.
- * @param bool   $omit   Omit start and end.
- *
- * @return string
- */
-function str_between( string $start, string $end, string $string, bool $omit = false ): string {
-	$string = ' ' . $string;
-	$ini    = strpos( $string, $start );
-
-	if ( $ini === 0 ) {
-		return '';
-	}
-
-	$ini += strlen( $start );
-
-	if ( strlen( $string ) < $ini ) {
-		$ini = 0;
-	}
-
-	$len    = strpos( $string, $end, $ini ) - $ini;
-	$string = $start . substr( $string, $ini, $len ) . $end;
-
-	if ( $omit ) {
-		$string = str_replace( [ $start, $end ], '', $string );
-	}
-
-	return $string;
-}
-
-/**
- * Replace first occurrence of a string.
+ * Returns URI to theme directory.
  *
  * @since 1.0.0
  *
- * @param string $search  String to search for.
- * @param string $replace String to replace with.
- * @param string $string  String to sanitize.
+ * @return string
+ */
+function get_plugin_uri(): string {
+	static $uri = null;
+
+	if ( is_null( $uri ) ) {
+		$uri = plugin_dir_url( FILE );
+		$uri = trailingslashit( $uri );
+	}
+
+	return $uri;
+}
+
+/**
+ * Returns path to `wp-content` directory.
+ *
+ * @since 1.0.0
  *
  * @return string
  */
-function str_replace_first( string $search, string $replace, string $subject ): string {
-	return implode( $replace, explode( $search, $subject, 2 ) );
+function get_content_dir(): string {
+	return trailingslashit( dirname( get_template_directory(), 2 ) );
+}
+
+/**
+ * Returns path to pattern directory.
+ *
+ * @since 1.0.0
+ *
+ * @param WP_Post|null $post Post object (optional).
+ *
+ * @return string
+ */
+function get_pattern_dir( WP_Post $post = null ): string {
+	$post        = $post ?? get_post() ?? null;
+	$stylesheet  = get_stylesheet();
+	$default_dir = get_content_dir() . "themes/$stylesheet/patterns";
+
+	/**
+	 * Filters the pattern directory.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string   $filtered_dir Filtered pattern directory.
+	 * @param ?WP_Post $post         Post object (optional).
+	 */
+	$filtered_dir = \apply_filters( 'blockify_pattern_export_dir', $default_dir, $post );
+
+	return \esc_html( trailingslashit( $filtered_dir ) );
+}
+
+/**
+ * Returns memoized array of all reusable blocks.
+ *
+ * @since 1.0.0
+ *
+ * @return array
+ */
+function get_reusable_blocks(): array {
+	static $reusable_blocks = [];
+
+	if ( ! empty( $reusable_blocks ) ) {
+		return $reusable_blocks;
+	}
+
+	$reusable_blocks = get_posts(
+		[
+			'post_type'      => 'wp_block',
+			'posts_per_page' => -1,
+		]
+	);
+
+	return $reusable_blocks;
 }

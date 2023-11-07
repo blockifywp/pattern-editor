@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "types": [
+      "node",
+      "react",
+      "react-dom",
+      "jest"
+    ],
+  },
+  "include": [
+    "src",
+    "../../themes/blockify/src"
+  ],
+  "exclude": [
+    "assets/js",
+    "build",
+    "node_modules",
+    "vendor"
+  ]
+}
