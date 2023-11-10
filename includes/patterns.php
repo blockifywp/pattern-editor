@@ -182,6 +182,23 @@ function replace_reusable_blocks( string $html = '' ): string {
 }
 
 /**
+ * Replaces Blockify post content blocks with core.
+ *
+ * @since 1.0.0
+ *
+ * @param string $html The HTML content.
+ *
+ * @return string
+ */
+function replace_post_content_blocks( string $html = '' ): string {
+	return str_replace(
+		'wp:blockify/post-content',
+		'wp:post-content',
+		$html
+	);
+}
+
+/**
  * Replaces image paths with theme URI.
  *
  * @since 1.0.0
@@ -357,9 +374,9 @@ function import_patterns(): void {
 
 		$category = $pattern['categories'][0] ?? 'uncategorized';
 
-		if ( in_array( $category, [ 'template', 'page' ] ) ) {
-			continue;
-		}
+		//if ( in_array( $category, [ 'template', 'page' ] ) ) {
+		//	continue;
+		//}
 
 		$args = [
 			'post_name'    => $pattern['slug'],
@@ -561,6 +578,7 @@ function export_pattern( int $post_ID, WP_Post $post, bool $update ): int {
 	$content     = replace_image_paths( $content, $content_dir );
 	$content     = replace_nav_menu_refs( $content );
 	$content     = replace_reusable_blocks( $content );
+	$content     = replace_post_content_blocks( $content );
 	$content     = apply_filters( 'blockify_pattern_export_content', $content, $post, $category );
 	$content     = preg_replace( "/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $content );
 
