@@ -3,7 +3,9 @@
 namespace Blockify\PatternEditor;
 
 use WP_Post;
+use function apply_filters;
 use function dirname;
+use function esc_html;
 use function get_post;
 use function is_null;
 use function plugin_dir_url;
@@ -60,9 +62,9 @@ function get_pattern_dir( WP_Post $post = null ): string {
 	 * @param string   $filtered_dir Filtered pattern directory.
 	 * @param ?WP_Post $post         Post object (optional).
 	 */
-	$filtered_dir = \apply_filters( 'blockify_pattern_export_dir', $default_dir, $post );
+	$filtered_dir = apply_filters( 'blockify_pattern_export_dir', $default_dir, $post );
 
-	return \esc_html( trailingslashit( $filtered_dir ) );
+	return esc_html( trailingslashit( $filtered_dir ) );
 }
 
 /**

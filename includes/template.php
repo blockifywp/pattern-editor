@@ -6,7 +6,6 @@ namespace Blockify\PatternEditor;
 
 use function add_action;
 use function add_filter;
-use function Blockify\Theme\str_contains_any;
 use function dirname;
 use function do_blocks;
 use function file_exists;
@@ -21,6 +20,7 @@ use function locate_block_template;
 use function ob_get_clean;
 use function ob_start;
 use function show_admin_bar;
+use function str_contains;
 use function WP_Filesystem;
 
 //add_filter( 'template_include', NS . 'single_block_pattern_template' );
@@ -61,7 +61,7 @@ function single_block_pattern_template( string $template ): string {
 		$slug          = get_post_field( 'post_name', get_the_ID() );
 		$template_slug = 'blank';
 
-		if ( str_contains_any( $slug, 'page-' ) ) {
+		if ( str_contains( $slug, 'page-' ) ) {
 			$template_slug = 'full-width';
 		}
 

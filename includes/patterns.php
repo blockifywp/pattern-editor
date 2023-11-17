@@ -617,7 +617,8 @@ function export_pattern( int $post_ID, WP_Post $post, bool $update ): int {
 		WP_Filesystem();
 	}
 
-	$title          = ucwords( str_replace( '-', ' ', $name ) );
+	$title = ucwords( str_replace( '-', ' ', $category . ' ' . $name ) );
+
 	$header_comment = <<<EOF
 <?php
 /**
@@ -631,10 +632,11 @@ EOF;
 	}
 
 	if ( $post_ID ) {
-		$header_comment .= "\n * ID: $post_ID";
+		//$header_comment .= "\n * ID: $post_ID";
 	}
 
 	if ( $category === 'template' ) {
+		$header_comment .= "\n * Template Types: $slug";
 		$header_comment .= "\n * Inserter: false";
 	}
 
