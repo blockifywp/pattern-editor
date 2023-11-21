@@ -11,6 +11,7 @@ module.exports = ( env ) => {
 		entry: {
 			...defaultConfig.entry,
 			patterns: './src/patterns.tsx',
+			export: './src/export.tsx',
 		},
 
 		devServer: {

@@ -16,6 +16,7 @@
 namespace Blockify\PatternEditor;
 
 use function add_action;
+use function glob;
 
 const NS   = __NAMESPACE__ . '\\';
 const DS   = DIRECTORY_SEPARATOR;
@@ -50,23 +51,11 @@ add_action( 'after_setup_theme', NS . 'setup' );
  * @return void
  */
 function setup(): void {
-	$files = [
-		'utility',
-		//'admin',
-		//'block',
-		//'cpt',
-		//'export',
-		//'import',
-		'patterns',
-		'quick-links',
-		//'template',
-	];
+	$files = glob( DIR . 'includes/*.php' );
 
 	foreach ( $files as $file ) {
-		$path = DIR . 'includes/' . $file . '.php';
-
-		if ( is_readable( $path ) ) {
-			require_once $path;
+		if ( is_readable( $file ) ) {
+			require_once $file;
 		}
 	}
 }

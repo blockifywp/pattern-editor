@@ -45,11 +45,11 @@ function add_quick_links(): void {
 			'url'   => admin_url( 'post-new.php?post_type=wp_block' ),
 		],
 		[
-			'label' => __( 'Header', 'blockify' ),
+			'label' => __( 'Header Template Part', 'blockify' ),
 			'url'   => admin_url( "site-editor.php?postType=wp_template_part&postId=$stylesheet%2F%2Fheader&canvas=edit" ),
 		],
 		[
-			'label' => __( 'Footer', 'blockify' ),
+			'label' => __( 'Footer Template Part', 'blockify' ),
 			'url'   => admin_url( "site-editor.php?postType=wp_template_part&postId=$stylesheet%2F%2Ffooter&canvas=edit" ),
 		],
 		[

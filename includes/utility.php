@@ -2,14 +2,21 @@
 
 namespace Blockify\PatternEditor;
 
+use WP_CLI;
 use WP_Post;
+use function add_query_arg;
+use function admin_url;
 use function apply_filters;
+use function array_merge;
 use function dirname;
 use function esc_html;
 use function get_post;
+use function get_stylesheet;
 use function is_null;
 use function plugin_dir_url;
 use function trailingslashit;
+use function wp_nonce_url;
+use function wp_safe_redirect;
 
 /**
  * Returns URI to theme directory.
@@ -89,4 +96,37 @@ function get_reusable_blocks(): array {
 	);
 
 	return $reusable_blocks;
+}
+
+/**
+ * Handles pattern redirect.
+ *
+ * @since 1.0.0
+ *
+ * @param array $extra Extra query args (optional).
+ *
+ * @return void
+ */
+function patterns_redirect( array $extra = [] ): void {
+	$url = add_query_arg(
+		array_merge(
+			[
+				'post_type' => 'wp_block',
+				'orderby'   => 'title',
+				'order'     => 'ASC',
+			],
+			$extra
+		),
+		admin_url( 'edit.php' )
+	);
+
+	$action = $extra['action'] ?? '';
+
+	if ( $action ) {
+		wp_safe_redirect( wp_nonce_url( $url, $action ) );
+	} else {
+		wp_safe_redirect( $url );
+	}
+
+	exit;
 }
