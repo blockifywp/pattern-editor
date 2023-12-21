@@ -10,8 +10,8 @@ module.exports = ( env ) => {
 
 		entry: {
 			...defaultConfig.entry,
+			index: './src/index.tsx',
 			patterns: './src/patterns.tsx',
-			export: './src/export.tsx',
 		},
 
 		devServer: {

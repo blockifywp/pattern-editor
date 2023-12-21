@@ -9,12 +9,15 @@ use WP_Screen;
 use function __;
 use function add_action;
 use function admin_url;
+use function esc_html__;
 use function esc_url_raw;
-use function explode;
 use function filemtime;
+use function filter_input;
 use function get_current_user_id;
+use function get_post_type;
 use function get_stylesheet;
 use function get_stylesheet_directory;
+use function is_array;
 use function register_post_type;
 use function rest_url;
 use function sanitize_text_field;
@@ -22,6 +25,38 @@ use function wp_create_nonce;
 use function wp_enqueue_script;
 use function wp_localize_script;
 use function wp_unslash;
+
+add_action( 'enqueue_block_editor_assets', NS . 'enqueue_pattern_editor_assets' );
+/**
+ * Enqueues pattern editor scripts and styles.
+ *
+ * @since 0.0.1
+ *
+ * @return void
+ */
+function enqueue_pattern_editor_assets(): void {
+	$post_type = get_post_type();
+
+	if ( $post_type !== 'wp_block' ) {
+		return;
+	}
+
+	$index_asset = DIR . 'build/index.asset.php';
+
+	if ( ! is_readable( $index_asset ) ) {
+		return;
+	}
+
+	$index_asset = require $index_asset;
+
+	wp_enqueue_script(
+		'blockify-pattern-editor',
+		get_plugin_uri() . 'build/index.js',
+		$index_asset['dependencies'],
+		$index_asset['version'],
+		true
+	);
+}
 
 add_action( 'admin_enqueue_scripts', NS . 'enqueue_pattern_admin' );
 /**
@@ -123,7 +158,7 @@ function sort_patterns_redirect( WP_Screen $current_screen ): void {
 	}
 }
 
-add_filter( 'manage_wp_block_posts_columns', NS . 'add_pattern_category_column' );
+add_filter( 'manage_wp_block_posts_columns', NS . 'add_pattern_date_column' );
 /**
  * Adds a column to the wp_block post type.
  *
@@ -133,39 +168,17 @@ add_filter( 'manage_wp_block_posts_columns', NS . 'add_pattern_category_column' 
  *
  * @return array
  */
-function add_pattern_category_column( array $columns ): array {
+function add_pattern_date_column( array $columns ): array {
 	unset ( $columns['date'] );
 
-	$columns['category'] = __( 'Category', 'wp-patterns' );
-	$columns['date']     = __( 'Date', 'wp-patterns' );
+	$columns['date'] = __( 'Date', 'wp-patterns' );
 
 	return $columns;
 }
 
-add_action( 'manage_wp_block_posts_custom_column', NS . 'add_pattern_category_column_title', 10, 2 );
+add_filter( 'post_row_actions', NS . 'add_post_row_actions', 10, 2 );
 /**
- * Adds data to the custom column.
- *
- * @since 1.0.0
- *
- * @param string $column  Column name.
- * @param int    $post_id Post ID.
- *
- * @return void
- */
-function add_pattern_category_column_title( string $column, int $post_id ) {
-	if ( $column === 'category' ) {
-		$title    = get_the_title( $post_id );
-		$explode  = explode( ' ', $title );
-		$category = $explode[0] ?? '';
-
-		echo $category;
-	}
-}
-
-add_filter( 'post_row_actions', NS . 'add_quick_edit_button', 10, 2 );
-/**
- * Re-adds quick edit to post type.
+ * Adds duplicate links and re-adds quick edit link.
  *
  * @since 1.0.0
  *
@@ -174,7 +187,7 @@ add_filter( 'post_row_actions', NS . 'add_quick_edit_button', 10, 2 );
  *
  * @return array
  */
-function add_quick_edit_button( array $actions, WP_Post $post ) {
+function add_post_row_actions( array $actions, WP_Post $post ) {
 	if ( $post->post_type === 'wp_block' ) {
 		$actions['inline hide-if-no-js'] = sprintf(
 			'<button type="button" class="button-link editinline" aria-label="%s" aria-expanded="false">%s</button>',
@@ -182,8 +195,62 @@ function add_quick_edit_button( array $actions, WP_Post $post ) {
 			esc_attr( sprintf( __( 'Quick edit &#8220;%s&#8221; inline' ), $post->post_title ) ),
 			__( 'Quick&nbsp;Edit' )
 		);
+
+		$actions['duplicate'] = sprintf(
+			'<a href="%s" aria-label="%s">%s</a>',
+			get_patterns_url( [
+				'duplicate_pattern' => $post->ID,
+			] ),
+			/* translators: %s: Post title. */
+			esc_attr( sprintf( __( 'Duplicate &#8220;%s&#8221;', 'pattern-editor' ), $post->post_title ) ),
+			__( 'Duplicate', 'pattern-editor' )
+		);
 	}
+
 	return $actions;
+}
+
+add_action( 'admin_init', NS . 'duplicate_pattern' );
+/**
+ * Duplicates a pattern.
+ *
+ * @since 1.0.0
+ *
+ * @return void
+ */
+function duplicate_pattern(): void {
+	$duplicate = filter_input( INPUT_GET, 'duplicate_pattern', FILTER_SANITIZE_NUMBER_INT );
+
+	if ( ! $duplicate ) {
+		return;
+	}
+
+	$post = get_post( $duplicate );
+
+	if ( ! $post ) {
+		return;
+	}
+
+	$new_post = [
+		'post_title'   => $post->post_title . esc_html__( ' (Copy)', 'pattern-editor' ),
+		'post_content' => $post->post_content,
+		'post_status'  => 'draft',
+		'post_type'    => 'wp_block',
+	];
+
+	$new_post_id = wp_insert_post( $new_post );
+
+	if ( ! $new_post_id ) {
+		return;
+	}
+
+	$terms = wp_get_object_terms( $post->ID, 'wp_block_category' );
+
+	if ( is_array( $terms ) ) {
+		wp_set_object_terms( $new_post_id, $terms[0]->term_id, 'wp_block_category' );
+	}
+
+	patterns_redirect();
 }
 
 add_action( 'current_screen', NS . 'export_pattern_cpt' );

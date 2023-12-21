@@ -4,26 +4,13 @@ declare( strict_types=1 );
 
 namespace Blockify\PatternEditor;
 
-use function add_action;
-use function add_filter;
-use function dirname;
-use function do_blocks;
-use function file_exists;
-use function function_exists;
-use function get_post_field;
-use function get_stylesheet_directory;
+use WP_Block_Patterns_Registry;
+use function filter_input;
 use function get_template_directory;
-use function get_the_ID;
-use function is_page;
-use function is_singular;
 use function locate_block_template;
-use function ob_get_clean;
-use function ob_start;
-use function show_admin_bar;
-use function str_contains;
-use function WP_Filesystem;
+use const FILTER_SANITIZE_FULL_SPECIAL_CHARS;
 
-//add_filter( 'template_include', NS . 'single_block_pattern_template' );
+add_filter( 'template_include', NS . 'single_block_pattern_template' );
 /**
  * Filter pattern template.
  *
@@ -34,90 +21,111 @@ use function WP_Filesystem;
  * @return string
  */
 function single_block_pattern_template( string $template ): string {
-	$child  = get_stylesheet_directory() . '/templates/blank.html';
-	$parent = get_template_directory() . '/templates/blank.html';
-	$file   = file_exists( $child ) ? $child : $parent;
+	$pattern_name = get_pattern_preview_name();
 
-	if ( ! file_exists( $file ) ) {
-		$dir = dirname( $file );
-
-		if ( ! file_exists( $dir ) ) {
-			mkdir( $dir, 0755, true );
-		}
-
-		$data = '<!-- wp:post-content {"layout":{"inherit":true}} /-->';
-
-		global $wp_filesystem;
-
-		if ( ! $wp_filesystem ) {
-			require_once ABSPATH . '/wp-admin/includes/file.php';
-			WP_Filesystem();
-		}
-
-		$wp_filesystem->put_contents( $file, $data );
+	if ( ! $pattern_name ) {
+		return $template;
 	}
 
-	if ( is_singular( 'wp_block' ) ) {
-		$slug          = get_post_field( 'post_name', get_the_ID() );
-		$template_slug = 'blank';
-
-		if ( str_contains( $slug, 'page-' ) ) {
-			$template_slug = 'full-width';
-		}
-
-		$template = locate_block_template( $file, $template_slug, [] );
-	}
-
-	return $template;
+	return locate_block_template(
+		get_template_directory() . '/templates/blank.html',
+		'blank',
+		[]
+	);
 }
 
-//add_filter( 'the_content', NS . 'render_auto_page_pattern' );
 /**
- * Automatically display patterns for pages without content and matching slug.
+ * Gets the pattern name from the query string.
  *
- * @since 1.0.0
- *
- * @param string $content Page content.
+ * @since 0.4.0
  *
  * @return string
  */
-function render_auto_page_pattern( string $content ): string {
+function get_pattern_preview_name(): string {
+	$page_id      = (int) filter_input( INPUT_GET, 'page_id', FILTER_SANITIZE_NUMBER_INT );
+	$pattern_name = filter_input( INPUT_GET, 'pattern_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 
-	if ( function_exists( 'Blockify\\Pro\\render_auto_page_pattern' ) ) {
-		return $content;
+	if ( $page_id !== 9999 ) {
+		return '';
 	}
 
-	if ( ! $content && is_page() ) {
-		$page_slug = get_post_field( 'post_name', get_the_ID() );
-		$file_name = get_stylesheet_directory() . "/patterns/page-$page_slug.php";
-
-		if ( ! file_exists( $file_name ) ) {
-			$file_name = get_template_directory() . "/patterns/default/page-$page_slug.php";
-		}
-
-		if ( file_exists( $file_name ) ) {
-			ob_start();
-			include $file_name;
-
-			$content = ob_get_clean();
-			$content = do_blocks( $content );
-		}
-	}
-
-	return $content;
+	return $pattern_name;
 }
 
-add_action( 'wp', NS . 'hide_admin_bar' );
+add_filter( 'the_posts', NS . 'block_pattern_preview', -100 );
 /**
- * Hide admin bar on single block pattern.
+ * Generates dynamic block pattern previews without registering a CPT.
  *
- * @since 1.0.0
+ * @param array $posts Original posts object.
  *
- * @return void
+ * @return array
  */
-function hide_admin_bar(): void {
-	if ( is_singular( 'wp_block' ) ) {
-		add_filter( 'show_admin_bar', '__return_false' );
-		show_admin_bar( false );
+function block_pattern_preview( array $posts ): array {
+	global $wp_query;
+
+	static $cache = null;
+
+	if ( ! is_null( $cache ) && $posts ) {
+		return $posts;
 	}
+
+	$cache = true;
+	$name  = get_pattern_preview_name();
+
+	if ( ! $name ) {
+		return $posts;
+	}
+
+	$pattern = WP_Block_Patterns_Registry::get_instance()->get_registered( $name );
+
+	if ( ! $pattern ) {
+		return $posts;
+	}
+
+	/* @var \WP_Post $post Post object */
+	$post                  = new class { };
+	$post->post_author     = 1;
+	$post->post_name       = $name;
+	$post->guid            = home_url() . DS . 'page' . DS . $name;
+	$post->post_title      = ucwords( str_replace( '-', ' ', $name ) );
+	$post->post_content    = $pattern['content'] ?? '';
+	$post->ID              = -1;
+	$post->post_type       = 'page';
+	$post->post_status     = 'publish';
+	$post->comment_status  = 'closed';
+	$post->ping_status     = 'open';
+	$post->comment_count   = 0;
+	$post->post_date       = current_time( 'mysql' );
+	$post->post_date_gmt   = current_time( 'mysql', 1 );
+	$post->page_template   = 'blank';
+	$posts                 = null;
+	$posts[]               = $post;
+	$wp_query->is_page     = true;
+	$wp_query->is_singular = true;
+	$wp_query->is_home     = false;
+	$wp_query->is_archive  = false;
+	$wp_query->is_category = false;
+	$wp_query->is_404      = false;
+
+	add_filter( 'show_admin_bar', fn() => false );
+
+	return $posts;
+}
+
+add_filter( 'pre_get_shortlink', NS . 'short_link_filter', 10, 2 );
+/**
+ * Short link filter.
+ *
+ * @param false|string $return Short-circuit return value.
+ *
+ * @return string
+ */
+function short_link_filter( $return ): string {
+	$pattern_name = get_pattern_preview_name();
+
+	if ( $pattern_name ) {
+		$return = '';
+	}
+
+	return (string) $return;
 }

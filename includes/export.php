@@ -133,7 +133,13 @@ function replace_reusable_blocks( string $html = '' ): string {
  *
  * @return string
  */
-function replace_post_content_blocks( string $html = '' ): string {
+function replace_template_blocks( string $html = '' ): string {
+	$html = str_replace(
+		'wp:blockify/template-part',
+		'wp:template-part',
+		$html
+	);
+
 	return str_replace(
 		'wp:blockify/post-content',
 		'wp:post-content',
@@ -248,24 +254,26 @@ function replace_image_paths( string $html, string $content_dir ): string {
 	return $html;
 }
 
-add_filter( 'save_post_wp_block', NS . 'export_pattern', 11, 3 );
-//add_action( 'wp_ajax_blockify_export_pattern', NS . 'export_pattern' );
+add_action( 'save_post_wp_block', NS . 'export_pattern', 10, 3 );
 /**
  * Handles export pattern request.
  *
  * @since 0.0.1
  *
- * @param WP_Post $post    The post object.
- * @param bool    $update  Whether this is an existing post being updated or
- *                         not.
+ * @param ?WP_Post $post    The post object.
+ * @param bool     $update  Whether this is an existing post being updated or
+ *                          not.
  *
- * @param int     $post_ID The post ID.
+ * @param int      $post_ID The post ID.
  *
  * @return int
  */
-function export_pattern( int $post_ID, WP_Post $post, bool $update ): int {
-
+function export_pattern( int $post_ID, ?WP_Post $post, bool $update ): int {
 	if ( ! $update ) {
+		return $post_ID;
+	}
+
+	if ( ! $post ) {
 		return $post_ID;
 	}
 
@@ -293,7 +301,7 @@ function export_pattern( int $post_ID, WP_Post $post, bool $update ): int {
 	$content     = replace_image_paths( $content, $content_dir );
 	$content     = replace_nav_menu_refs( $content );
 	$content     = replace_reusable_blocks( $content );
-	$content     = replace_post_content_blocks( $content );
+	$content     = replace_template_blocks( $content );
 	$content     = apply_filters( 'blockify_pattern_export_content', $content, $post, $category );
 	$content     = preg_replace( "/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $content );
 
@@ -344,10 +352,6 @@ EOF;
 
 	if ( $block_types ) {
 		$header_comment .= "\n * $block_types";
-	}
-
-	if ( $post_ID ) {
-		//$header_comment .= "\n * ID: $post_ID";
 	}
 
 	if ( $category === 'template' ) {

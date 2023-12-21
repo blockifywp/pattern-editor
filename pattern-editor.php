@@ -23,7 +23,6 @@ const DS   = DIRECTORY_SEPARATOR;
 const DIR  = __DIR__ . DS;
 const FILE = __FILE__;
 
-
 if ( ! version_compare( '7.4.0', PHP_VERSION, '<=' ) ) {
 	return;
 }

@@ -66,8 +66,8 @@ function get_pattern_dir( WP_Post $post = null ): string {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string   $filtered_dir Filtered pattern directory.
-	 * @param ?WP_Post $post         Post object (optional).
+	 * @param string   $default_dir Filtered pattern directory.
+	 * @param ?WP_Post $post        Post object (optional).
 	 */
 	$filtered_dir = apply_filters( 'blockify_pattern_export_dir', $default_dir, $post );
 
@@ -99,16 +99,16 @@ function get_reusable_blocks(): array {
 }
 
 /**
- * Handles pattern redirect.
+ * Returns URL to patterns page.
  *
  * @since 1.0.0
  *
  * @param array $extra Extra query args (optional).
  *
- * @return void
+ * @return string
  */
-function patterns_redirect( array $extra = [] ): void {
-	$url = add_query_arg(
+function get_patterns_url( array $extra ): string {
+	return add_query_arg(
 		array_merge(
 			[
 				'post_type' => 'wp_block',
@@ -119,7 +119,19 @@ function patterns_redirect( array $extra = [] ): void {
 		),
 		admin_url( 'edit.php' )
 	);
+}
 
+/**
+ * Handles pattern redirect.
+ *
+ * @since 1.0.0
+ *
+ * @param array $extra Extra query args (optional).
+ *
+ * @return void
+ */
+function patterns_redirect( array $extra = [] ): void {
+	$url    = get_patterns_url( $extra );
 	$action = $extra['action'] ?? '';
 
 	if ( $action ) {
