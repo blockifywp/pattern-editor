@@ -51,7 +51,7 @@ const PatternEditor = () => {
 	render(
 		<>
 			<Button
-				href={ '/?page_id=9999&pattern_name=' + slug }
+				href={ window.blockify.siteUrl + '?page_id=9999&pattern_name=' + slug }
 				target={ '_blank' }
 				icon={ external }
 				label={ __( 'Preview pattern', 'pattern-editor' ) }

@@ -52,11 +52,12 @@ function get_content_dir(): string {
  *
  * @since 1.0.0
  *
- * @param WP_Post|null $post Post object (optional).
+ * @param WP_Post|null $post    Post object (optional).
+ * @param string       $content Replaced content (optional).
  *
  * @return string
  */
-function get_pattern_dir( WP_Post $post = null ): string {
+function get_pattern_dir( WP_Post $post = null, string $content = '' ): string {
 	$post        = $post ?? get_post() ?? null;
 	$stylesheet  = get_stylesheet();
 	$default_dir = get_content_dir() . "themes/$stylesheet/patterns";
@@ -68,8 +69,9 @@ function get_pattern_dir( WP_Post $post = null ): string {
 	 *
 	 * @param string   $default_dir Filtered pattern directory.
 	 * @param ?WP_Post $post        Post object (optional).
+	 * @param ?string  $content     Replaced content (optional).
 	 */
-	$filtered_dir = apply_filters( 'blockify_pattern_export_dir', $default_dir, $post );
+	$filtered_dir = apply_filters( 'blockify_pattern_export_dir', $default_dir, $post, $content );
 
 	return esc_html( trailingslashit( $filtered_dir ) );
 }

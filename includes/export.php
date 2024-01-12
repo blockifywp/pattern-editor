@@ -134,15 +134,19 @@ function replace_reusable_blocks( string $html = '' ): string {
  * @return string
  */
 function replace_template_blocks( string $html = '' ): string {
-	$html = str_replace(
-		'wp:blockify/template-part',
-		'wp:template-part',
-		$html
-	);
-
 	return str_replace(
-		'wp:blockify/post-content',
-		'wp:post-content',
+		[
+			'wp:blockify/template-part',
+			'wp:blockify/pattern',
+			'wp:blockify/post-content',
+			'"constrained":true',
+		],
+		[
+			'wp:template-part',
+			'wp:pattern',
+			'wp:post-content',
+			'"layout":{"type":"constrained"}',
+		],
 		$html
 	);
 }
@@ -302,8 +306,8 @@ function export_pattern( int $post_ID, ?WP_Post $post, bool $update ): int {
 	$content     = replace_nav_menu_refs( $content );
 	$content     = replace_reusable_blocks( $content );
 	$content     = replace_template_blocks( $content );
-	$content     = apply_filters( 'blockify_pattern_export_content', $content, $post, $category );
 	$content     = preg_replace( "/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $content );
+	$content     = apply_filters( 'blockify_pattern_export_content', $content, $post, $category );
 
 	$block_types = '';
 
@@ -323,7 +327,7 @@ function export_pattern( int $post_ID, ?WP_Post $post, bool $update ): int {
 		$block_types = 'Block Types: ' . rtrim( $block_types, ',' );
 	}
 
-	$pattern_dir = get_pattern_dir( $post );
+	$pattern_dir = get_pattern_dir( $post, $content );
 
 	if ( ! file_exists( $pattern_dir ) ) {
 		wp_mkdir_p( $pattern_dir );

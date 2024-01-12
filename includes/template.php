@@ -4,7 +4,10 @@ declare( strict_types=1 );
 
 namespace Blockify\PatternEditor;
 
+use stdClass;
 use WP_Block_Patterns_Registry;
+use WP_Post;
+use function do_blocks;
 use function filter_input;
 use function get_template_directory;
 use function locate_block_template;
@@ -82,13 +85,13 @@ function block_pattern_preview( array $posts ): array {
 		return $posts;
 	}
 
-	/* @var \WP_Post $post Post object */
-	$post                  = new class { };
+	/* @var WP_Post $post Post object */
+	$post                  = new stdClass();
 	$post->post_author     = 1;
 	$post->post_name       = $name;
 	$post->guid            = home_url() . DS . 'page' . DS . $name;
 	$post->post_title      = ucwords( str_replace( '-', ' ', $name ) );
-	$post->post_content    = $pattern['content'] ?? '';
+	$post->post_content    = do_blocks( $pattern['content'] ?? '' );
 	$post->ID              = -1;
 	$post->post_type       = 'page';
 	$post->post_status     = 'publish';
@@ -107,7 +110,7 @@ function block_pattern_preview( array $posts ): array {
 	$wp_query->is_category = false;
 	$wp_query->is_404      = false;
 
-	add_filter( 'show_admin_bar', fn() => false );
+	add_filter( 'show_admin_bar', static fn(): bool => false );
 
 	return $posts;
 }
