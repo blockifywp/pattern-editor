@@ -9,11 +9,13 @@ Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Import, export and edit patterns with the Block Pattern custom post type with additional settings and UI features that makes working with WordPress block patterns easier and faster. Perfect for block theme developers and designers.
+Import, export and edit patterns with the Block Pattern custom post type with additional settings and UI features that makes working with WordPress block patterns easier and faster. This plugin has minimal settings, and when active, will automatically export patterns to the active themes patterns directory on save. Perfect for block theme developers and designers.
 
 == Description ==
 
-Pattern Editor is a plugin to help you create and edit patterns for WordPress block themes. It automatically exports patterns on save as PHP files to the active themes `patterns` directory. It works with the built in `wp_block` post type and adds some minimal UI features to make working with patterns easier. It supports the new Block Pattern editor UI in the Site Editor.
+Pattern Editor is a plugin to help you create and edit patterns for WordPress block themes. It automatically exports patterns on save as PHP files to the active themes `patterns` directory.
+
+It works with the built-in `wp_block` post type and adds some minimal UI features to make working with patterns easier. The new Block Pattern editor UI in the Site Editor is supported, and the `wp_block` post type screen is exposed in the admin menu for quick access.
 
 === Features ===
 
