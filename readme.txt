@@ -17,7 +17,7 @@ Pattern Editor is a plugin to help you create and edit patterns for WordPress bl
 
 It works with the built-in `wp_block` post type and adds some minimal UI features to make working with patterns easier. The new Block Pattern editor UI in the Site Editor is supported, and the `wp_block` post type screen is exposed in the admin menu for quick access.
 
-=== Features ===
+= Features =
 
 * Exports assets (images, SVGs, videos) to the active theme's `assets` directory.
 * Pattern front end previews.
@@ -27,7 +27,7 @@ It works with the built-in `wp_block` post type and adds some minimal UI feature
 * Can export to category subdirectories or a single directory.
 * Supports the new Block Pattern editor UI in the Site Editor.
 
-=== Filters ===
+= Filters =
 
 `blockify_pattern_export_use_category_dirs` - Enable or disable the use of category directories for pattern exports. Default is `true`. If enabled, patterns will be exported to `patterns/{category}/{pattern-name}.php`. If disabled, patterns will be exported to `patterns/{category}-{pattern-name}.php`.
 
