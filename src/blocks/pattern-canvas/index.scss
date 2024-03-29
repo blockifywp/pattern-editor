@@ -1,0 +1,39 @@
+.edit-post-visual-editor__post-title-wrapper {
+	display: none;
+}
+
+.is-root-container {
+	background: #f0f0f1;
+	min-height: 100%;
+}
+
+.wp-block-blockify-pattern-template {
+	display: contents;
+}
+
+$frame_width: 1400px;
+
+.wp-block-blockify-pattern-canvas {
+	min-height: 100%;
+	position: absolute;
+	inset: 0;
+	max-width: 100% !important;
+
+	> div > div > div > .block-editor-block-list__layout {
+		display: flex;
+		gap: calc(var(--wp--style--block-gap) * 4);
+		width: calc((#{$frame_width} * var(--inner-blocks, 1)) + ((var(--wp--style--block-gap) * 4) * (var(--inner-blocks, 1) - 1)));
+	}
+}
+
+.wp-block-blockify-pattern-frame {
+	background: #fff;
+	width: $frame_width;
+}
+
+.blockify-pattern-editor-frame-title {
+	position: absolute;
+	top: -3em;
+	font-size: small;
+	font-weight: 500;
+}

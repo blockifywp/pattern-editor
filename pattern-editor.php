@@ -8,9 +8,9 @@
  * License: GPLv2-or-later
  * Requires WP: 6.3
  * Requires PHP: 7.4
+ * Tested up to: 6.4
  * Text Domain: pattern-editor
- * Description: Import, export and edit patterns in the block editor and save
- * directly to your theme.
+ * Description: Import, export and edit block patterns in the Site Editor and save directly to your theme.
  */
 
 namespace Blockify\PatternEditor;
@@ -43,7 +43,7 @@ function load_textdomain(): void {
 	);
 }
 
-add_action( 'after_setup_theme', NS . 'setup' );
+add_action( 'after_setup_theme', NS . 'setup', 9 );
 /**
  * Setup Pattern Editor.
  *
@@ -58,4 +58,3 @@ function setup(): void {
 		}
 	}
 }
-

@@ -119,6 +119,7 @@ function delete_patterns(): void {
 		[
 			'post_type'      => 'wp_block',
 			'posts_per_page' => -1,
+			'post_status'    => 'publish',
 		]
 	);
 

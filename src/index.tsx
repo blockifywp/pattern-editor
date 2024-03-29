@@ -1,4 +1,4 @@
-import { render, useState } from '@wordpress/element';
+import { createRoot, useState } from '@wordpress/element';
 import { Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { check, external } from '@wordpress/icons';
@@ -9,16 +9,14 @@ import { registerPlugin } from '@wordpress/plugins';
 const PatternEditor = () => {
 	const postHeaderSettings = document.getElementsByClassName( 'edit-post-header__settings' )[ 0 ] as HTMLDivElement;
 
-	const [ exporting, setExporting ] = useState( false );
-	const [ exported, setExported ] = useState( false );
-
 	if ( ! postHeaderSettings ) {
 		return <></>;
 	}
 
 	const placeholderId = 'blockify-pattern-editor';
-	const existing = document.getElementById( placeholderId );
-	let placeholder = null;
+	const existing = document.getElementById( placeholderId ) as HTMLDivElement;
+
+	let placeholder: HTMLDivElement;
 
 	if ( ! existing ) {
 		placeholder = document.createElement( 'div' );
@@ -29,11 +27,23 @@ const PatternEditor = () => {
 		placeholder = existing;
 	}
 
-	const editorData = select( 'core/editor' );
+	const PreviewButton = () => {
+		const editorData = select( 'core/editor' );
 
-	const slug = editorData.getEditedPostSlug() ?? '';
+		const slug = editorData?.getEditedPostSlug() ?? '';
+
+		return <Button
+			href={ window.blockify.siteUrl + '?page_id=9999&pattern_name=' + slug }
+			target={ '_blank' }
+			icon={ external }
+			label={ __( 'Preview pattern', 'pattern-editor' ) }
+		/>;
+	};
+
+	createRoot( placeholder ).render( <PreviewButton /> );
 
 	const publishButton = postHeaderSettings.getElementsByClassName( 'editor-post-publish-button' )[ 0 ] as HTMLButtonElement;
+	const showPublishButton = false;
 
 	const exportPlaceholderId = 'blockify-pattern-export';
 	const exportExisting = document.getElementById( exportPlaceholderId );
@@ -48,79 +58,73 @@ const PatternEditor = () => {
 		exportPlaceholder = exportExisting;
 	}
 
-	render(
-		<>
-			<Button
-				href={ window.blockify.siteUrl + '?page_id=9999&pattern_name=' + slug }
-				target={ '_blank' }
-				icon={ external }
-				label={ __( 'Preview pattern', 'pattern-editor' ) }
-			/>
-		</>,
-		placeholder
-	);
+	const ExportButton = () => {
+		const [ exporting, setExporting ] = useState( false );
+		const [ exported, setExported ] = useState( false );
 
-	const exportPattern = () => {
-		apiFetch( {
-			path: '/blockify/v1/export-pattern',
-			method: 'POST',
-			data: {
-				slug,
-				id: editorData.getCurrentPostId() ?? 0,
-				content: editorData.getEditedPostContent() ?? '',
-				title: editorData.getEditedPostAttribute( 'title' ) ?? '',
-			},
-		} ).then( ( response ) => {
-			setExporting( false );
+		const editorData = select( 'core/editor' );
 
-			if ( response?.success === true ) {
-				setExported( true );
+		const slug = editorData?.getEditedPostSlug() ?? '';
 
-				setTimeout( () => {
-					setExported( false );
-				}, 2000 );
+		const exportPattern = () => {
+			apiFetch( {
+				path: '/blockify/v1/export-pattern',
+				method: 'POST',
+				data: {
+					slug,
+					id: editorData.getCurrentPostId() ?? 0,
+					content: editorData.getEditedPostContent() ?? '',
+					title: editorData.getEditedPostAttribute( 'title' ) ?? '',
+				},
+			} ).then( ( response: unknown ) => {
+				setExporting( false );
+
+				const success = ( response as { success: boolean } )?.success;
+
+				if ( success === true ) {
+					setExported( true );
+
+					setTimeout( () => {
+						setExported( false );
+					}, 2000 );
+				}
+			} ).catch( ( error ) => {
+				setExporting( false );
+
+				console.error( error );
+			} ).finally( () => {
+				setExporting( false );
+			} );
+		};
+
+		return <Button
+			variant={ 'secondary' }
+			isBusy={ exporting }
+			onClick={ () => {
+				setExporting( true );
+				exportPattern();
+			} }
+			label={ __( 'Export pattern to theme', 'pattern-editor' ) }
+			aria-label={ __( 'Export pattern to theme', 'pattern-editor' ) }
+			title={ __( 'Export pattern to theme', 'pattern-editor' ) }
+		>
+			{ ( ! exporting && ! exported ) &&
+				__( 'Export', 'pattern-editor' )
 			}
-		} ).catch( ( error ) => {
-			setExporting( false );
-
-			console.error( error );
-		} ).finally( () => {
-			setExporting( false );
-		} );
+			{ ( exporting && ! exported ) &&
+				__( 'Exporting…', 'pattern-editor' )
+			}
+			{ ( ! exporting && exported ) &&
+				<>
+					{ __( 'Exported!', 'pattern-editor' ) }
+					{ check }
+				</>
+			}
+		</Button>;
 	};
 
-	return <></>;
-
-	if ( publishButton ) {
-		render(
-			<>
-				<Button
-					variant={ 'secondary' }
-					isBusy={ exporting }
-					onClick={ () => {
-						setExporting( true );
-						exportPattern();
-					} }
-					label={ __( 'Export pattern to theme', 'pattern-editor' ) }
-					aria-label={ __( 'Export pattern to theme', 'pattern-editor' ) }
-					title={ __( 'Export pattern to theme', 'pattern-editor' ) }
-				>
-					{ ( ! exporting && ! exported ) &&
-						__( 'Export', 'pattern-editor' )
-					}
-					{ ( exporting && ! exported ) &&
-						__( 'Exporting…', 'pattern-editor' )
-					}
-					{ ( ! exporting && exported ) &&
-						<>
-							{ __( 'Exported!', 'pattern-editor' ) }
-							{ check }
-						</>
-					}
-				</Button>
-			</>,
-			exportPlaceholder
-		);
+	if ( showPublishButton ) {
+		createRoot( exportPlaceholder ).render( <ExportButton /> );
 	}
 
 	return <></>;

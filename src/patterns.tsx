@@ -1,5 +1,5 @@
 import { __, sprintf } from '@wordpress/i18n';
-import { toKebabCase } from '../../../themes/blockify/src/utility';
+import { toKebabCase } from '../../../../../resources/js/utility';
 
 interface blockifyPatterns {
 	nonce: string;

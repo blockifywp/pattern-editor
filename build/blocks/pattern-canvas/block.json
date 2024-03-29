@@ -1,0 +1,24 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "blockify/pattern-canvas",
+  "title": "Canvas",
+  "description": "A pannable and zoomable canvas for designing block patterns.",
+  "icon": "fullscreen",
+  "textdomain": "pattern-editor",
+  "parent": [
+    "blockify/pattern-template"
+  ],
+  "keywords": [
+    "canvas",
+    "zoom",
+    "pan"
+  ],
+  "attributes": {
+    "enabled": {
+      "type": "boolean"
+    }
+  },
+  "editorScript": "file:index.js",
+  "editorStyle": "file:index.css"
+}

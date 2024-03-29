@@ -1,0 +1,29 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "blockify/pattern-frame",
+  "title": "Pattern Frame",
+  "description": "Frame section for a single pattern",
+  "icon": "fullscreen",
+  "textdomain": "pattern-editor",
+  "keywords": [
+    "pattern",
+    "frame",
+    "section"
+  ],
+  "parent": [
+    "blockify/pattern-canvas"
+  ],
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    }
+  },
+  "editorScript": "file:index.js"
+}

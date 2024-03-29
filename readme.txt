@@ -3,19 +3,35 @@ Contributors: blockifywp
 Donate link: https://blockifywp.com/
 Tags: pattern, editor, block, gutenberg, block editor, blockify
 Requires at least: 6.3
-Tested up to: 6.3
+Tested up to: 6.4
 Stable tag: trunk
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Import, export and edit patterns with the Block Pattern custom post type with additional settings and UI features that makes working with WordPress block patterns easier and faster
+Import, export and edit patterns with the Block Pattern custom post type with additional settings and UI features that makes working with WordPress block patterns easier and faster. Perfect for block theme developers and designers.
 
 == Description ==
 
-Pattern Editor is a plugin to help you create and edit patterns for the WordPress block editor. It registers a new post type called "Pattern" that allows you to create and edit patterns in the same way you would create and edit posts.
+Pattern Editor is a plugin to help you create and edit patterns for WordPress block themes. It automatically exports patterns on save as PHP files to the active themes `patterns` directory. It works with the built in `wp_block` post type and adds some minimal UI features to make working with patterns easier. It supports the new Block Pattern editor UI in the Site Editor.
 
-The pattern editor allows you to edit patterns separately as if they were pages. Patterns can also be saved directly to the active child theme which can enable a really powerful design system for theme developers once in place.
+=== Features ===
+
+* Exports assets (images, SVGs, videos) to the active theme's `assets` directory.
+* Pattern front end previews.
+* Export patterns as PHP files.
+* Import patterns from PHP files.
+* Edit patterns in the block editor.
+* Can export to category subdirectories or a single directory.
+* Supports the new Block Pattern editor UI in the Site Editor.
+
+=== Filters ===
+
+`blockify_pattern_export_use_category_dirs` - Enable or disable the use of category directories for pattern exports. Default is `true`. If enabled, patterns will be exported to `patterns/{category}/{pattern-name}.php`. If disabled, patterns will be exported to `patterns/{category}-{pattern-name}.php`.
+
+`blockify_image_export_dir` - Set the directory where images and assets are exported to. Default is `themes/$stylesheet/assets`. Images are saved to the `img` subdirectory, SVGs to the `svg` subdirectory, and videos to the `video` subdirectory.
+
+`blockify_pattern_export_content` - Allows you to modify the content of the exported pattern file. The first parameter is the content of the pattern file, the second parameter is the pattern post object, and the third parameter is the pattern category slug.
 
 More documentation coming soon.
 
@@ -29,19 +45,23 @@ More documentation coming soon.
 
 == Frequently Asked Questions ==
 
-= How do I use this plugin? =
+= How does this plugin work? =
 
-This plugin adds a new post type called "Block Pattern" which can be accessed from Appearance > Patterns. You can create and edit patterns in the same way you would create and edit posts. Patterns are saved in the database as well as the currently active theme.
+Pattern Editor automatically exports patterns on save as PHP files to the active themes `patterns` directory. It works with the built-in `wp_block` post type and adds some minimal UI features to make working with patterns easier.
 
 = Who is this plugin for? =
 
-This plugin is designed to be used by developers and theme authors. It is not intended for use by end users.
-
-= How to change the export directory path =
-
-From the Block Patterns admin page, click on the "Screen Options" tab in the top right corner of the page. You will see two text fields for the export and import directories. You can change the path to the directory where you want to save your patterns.
+This plugin is designed to be used by developers and theme authors.
 
 == ChangeLog ==
+
+= 0.1.0 - 29 March 2024 =
+
+* Update: Stable version
+* Add: Escape exported URLs
+* Add: Use category dirs filter
+* Add: Basic pattern canvas implementation
+* Fix: Import pattern category title acronyms
 
 = 0.0.3 - 2 April 2023 =
 

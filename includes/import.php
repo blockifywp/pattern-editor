@@ -12,6 +12,7 @@ use function get_page_by_path;
 use function get_post;
 use function get_stylesheet;
 use function sanitize_text_field;
+use function str_replace;
 use function ucwords;
 use function wp_slash;
 use function wp_unslash;
@@ -35,15 +36,21 @@ function import_patterns(): void {
 			continue;
 		}
 
-		$category = $pattern['categories'][0] ?? 'uncategorized';
+		$category       = $pattern['categories'][0] ?? 'uncategorized';
+		$category_title = ucwords( $category );
+		$post_title     = str_replace( $category_title . ' ', '', $pattern['title'] );
 
-		//if ( in_array( $category, [ 'template', 'page' ] ) ) {
-		//	continue;
-		//}
+		if ( $category === 'cta' ) {
+			$category_title = 'CTA';
+		}
 
+		if ( $category === 'faq' ) {
+			$category_title = 'FAQ';
+		}
+		
 		$args = [
-			'post_name'    => $pattern['slug'],
-			'post_title'   => ucwords( $category ) . ' ' . $pattern['title'],
+			'post_name'    => str_replace( $category, '-', $pattern['slug'] ),
+			'post_title'   => $category_title . ' ' . $post_title,
 			'post_content' => $pattern['content'],
 			'post_status'  => 'publish',
 			'post_type'    => 'wp_block',

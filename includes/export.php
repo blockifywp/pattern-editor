@@ -13,6 +13,7 @@ use function file_exists;
 use function flush_rewrite_rules;
 use function get_home_url;
 use function get_stylesheet;
+use function get_stylesheet_directory_uri;
 use function home_url;
 use function in_array;
 use function is_array;
@@ -232,14 +233,16 @@ function replace_image_paths( string $html, string $content_dir ): string {
 
 		$new = $new_dir . $basename;
 
-		copy( $original, $new );
+		if ( ! file_exists( $new ) ) {
+			copy( $original, $new );
+		}
 
 		$html = str_replace( $url, $new, trim( $html ) );
 	}
 
 	$html = str_replace(
 		$asset_dir,
-		'<?php echo content_url( "/' . $setting . '/" ) ?>',
+		'<?php echo esc_url( content_url( "/' . $setting . '/" ) ) ?>',
 		$html
 	);
 
@@ -251,7 +254,7 @@ function replace_image_paths( string $html, string $content_dir ): string {
 
 	$html = str_replace(
 		home_url(),
-		'<?php echo home_url() ?>',
+		'<?php echo esc_url( home_url() ) ?>',
 		$html
 	);
 
@@ -366,8 +369,10 @@ EOF;
 	$header_comment .= "\n */\n";
 	$header_comment .= "?>\n";
 
+	$use_category_dirs = apply_filters( 'blockify_pattern_export_use_category_dirs', true );
+
 	$wp_filesystem->put_contents(
-		$pattern_dir . $category . DS . $name . '.php',
+		$pattern_dir . $category . ( $use_category_dirs ? DS : '-' ) . $name . '.php',
 		$header_comment . $content
 	);
 

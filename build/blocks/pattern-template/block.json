@@ -1,0 +1,14 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "blockify/pattern-template",
+  "title": "Pattern Template",
+  "description": "Template for creating patterns",
+  "icon": "fullscreen",
+  "textdomain": "pattern-editor",
+  "keywords": [],
+  "supports": {
+    "inserter": false
+  },
+  "editorScript": "file:index.js"
+}
