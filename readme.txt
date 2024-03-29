@@ -55,6 +55,12 @@ Pattern Editor automatically exports patterns on save as PHP files to the active
 
 This plugin is designed to be used by developers and theme authors.
 
+== Screenshots ==
+
+1. Block Patterns post type edit screen
+2. Site Editor block pattern screen
+3. Edit pattern screen
+
 == ChangeLog ==
 
 = 0.1.0 - 29 March 2024 =
