@@ -4,7 +4,7 @@
  * Plugin URI: https://blockifywp.com/pattern-editor
  * Author: Blockify
  * Author URI: https://blockifywp.com/
- * Version: 0.1.0
+ * Version: 0.1.1
  * License: GPLv2-or-later
  * Requires WP: 6.3
  * Requires PHP: 7.4

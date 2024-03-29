@@ -63,6 +63,10 @@ This plugin is designed to be used by developers and theme authors.
 
 == ChangeLog ==
 
+= 0.1.1 - 29 March 2024 =
+
+* Remove: Blocks (temporarily)
+
 = 0.1.0 - 29 March 2024 =
 
 * Update: Stable version
