@@ -1,10 +1,12 @@
-.edit-post-visual-editor__post-title-wrapper {
-	display: none;
-}
+.post-type-pattern-template {
 
-.is-root-container {
-	background: #f0f0f1;
-	min-height: 100%;
+	.edit-post-visual-editor__post-title-wrapper {
+		display: none;
+	}
+
+	.is-root-container {
+		min-height: 100%;
+	}
 }
 
 .wp-block-blockify-pattern-template {
@@ -18,6 +20,7 @@ $frame_width: 1400px;
 	position: absolute;
 	inset: 0;
 	max-width: 100% !important;
+	background: #f0f0f1;
 
 	> div > div > div > .block-editor-block-list__layout {
 		display: flex;
@@ -34,6 +37,5 @@ $frame_width: 1400px;
 .blockify-pattern-editor-frame-title {
 	position: absolute;
 	top: -3em;
-	font-size: small;
 	font-weight: 500;
 }

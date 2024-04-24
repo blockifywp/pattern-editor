@@ -5,7 +5,8 @@ import {
 	useBlockProps,
 } from '@wordpress/block-editor';
 import { fullscreen } from '@wordpress/icons';
-import { PanelBody, PanelRow, TextControl } from '@wordpress/components';
+import { Button, PanelBody, PanelRow, TextControl } from '@wordpress/components';
+import { __ } from '@wordpress/i18n';
 
 import blockJson from './block.json';
 
@@ -35,6 +36,18 @@ const Edit = ( { attributes, setAttributes }: blockProps ) => {
 								title: value,
 							} ) }
 						/>
+					</PanelRow>
+					<PanelRow>
+						<Button
+							variant={ 'primary' }
+							onClick={ () => {
+								setAttributes( {
+									title: '',
+								} );
+							} }
+						>
+							{ __( 'Export Pattern', 'blockify' ) }
+						</Button>
 					</PanelRow>
 				</PanelBody>
 			</InspectorControls>

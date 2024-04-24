@@ -14,6 +14,7 @@ use function flush_rewrite_rules;
 use function get_home_url;
 use function get_stylesheet;
 use function get_stylesheet_directory_uri;
+use function get_the_terms;
 use function home_url;
 use function in_array;
 use function is_array;
@@ -36,7 +37,8 @@ add_action( 'admin_post_blockify_export_patterns', NS . 'export_patterns' );
  *
  * @return void
  */
-function export_patterns(): void {
+function export_patterns(): void
+{
 	$synced_patterns = get_reusable_blocks();
 
 	foreach ( $synced_patterns as $synced_pattern ) {
@@ -55,7 +57,8 @@ function export_patterns(): void {
  *
  * @return array
  */
-function get_nav_menus(): array {
+function get_nav_menus(): array
+{
 	static $nav_menus = [];
 
 	if ( ! empty( $nav_menus ) ) {
@@ -81,7 +84,8 @@ function get_nav_menus(): array {
  *
  * @return string
  */
-function replace_nav_menu_refs( string $html = '' ): string {
+function replace_nav_menu_refs( string $html = '' ): string
+{
 	$nav_menus = get_nav_menus();
 
 	foreach ( $nav_menus as $nav_menu ) {
@@ -104,7 +108,8 @@ function replace_nav_menu_refs( string $html = '' ): string {
  *
  * @return string
  */
-function replace_reusable_blocks( string $html = '' ): string {
+function replace_reusable_blocks( string $html = '' ): string
+{
 	if ( ! $html ) {
 		return $html;
 	}
@@ -134,7 +139,8 @@ function replace_reusable_blocks( string $html = '' ): string {
  *
  * @return string
  */
-function replace_template_blocks( string $html = '' ): string {
+function replace_template_blocks( string $html = '' ): string
+{
 	return str_replace(
 		[
 			'wp:blockify/template-part',
@@ -163,7 +169,8 @@ function replace_template_blocks( string $html = '' ): string {
  *
  * @return string
  */
-function replace_image_paths( string $html, string $content_dir ): string {
+function replace_image_paths( string $html, string $content_dir ): string
+{
 	$regex       = "/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i";
 	$types       = [ 'jpg', 'jpeg', 'png', 'webp', 'gif', 'mp4', 'mov', 'svg', 'webm' ];
 	$upload_dir  = wp_upload_dir();
@@ -275,7 +282,8 @@ add_action( 'save_post_wp_block', NS . 'export_pattern', 10, 3 );
  *
  * @return int
  */
-function export_pattern( int $post_ID, ?WP_Post $post, bool $update ): int {
+function export_pattern( int $post_ID, ?WP_Post $post, bool $update ): int
+{
 	if ( ! $update ) {
 		return $post_ID;
 	}
@@ -294,8 +302,24 @@ function export_pattern( int $post_ID, ?WP_Post $post, bool $update ): int {
 		return $post_ID;
 	}
 
-	$explode  = explode( '-', $slug );
-	$category = $explode[0] ?? null;
+	$category = null;
+
+	$categories = get_the_terms( $post_ID, 'wp_pattern_category' );
+
+	if ( $categories ) {
+		$category_slug = $categories[0]->slug;
+
+		if ( $category_slug === 'pro' ) {
+			$category_slug = $categories[1]->slug;
+		}
+
+		$category = $category_slug;
+	}
+
+	if ( ! $category ) {
+		$explode  = explode( '-', $slug );
+		$category = $explode[0] ?? null;
+	}
 
 	if ( ! $category ) {
 		return $post_ID;

@@ -8,13 +8,16 @@ use function add_action;
 use function register_block_type;
 use function register_custom_post_type;
 
-add_action( 'after_setup_theme', NS . 'register_blocks' );
+add_action( 'init', NS . 'register_blocks' );
 /**
  * Register blocks
  */
 function register_blocks(): void {
-	return;
-	
+
+	if ( ! function_exists( 'register_custom_post_type' ) ) {
+		return;
+	}
+
 	register_custom_post_type( 'pattern-template', [
 		'template'      => [
 			[
