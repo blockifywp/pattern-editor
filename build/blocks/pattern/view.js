@@ -1,0 +1,1 @@
+(()=>{const e=()=>{const e=document.getElementsByClassName("blockify-pattern");for(let t=0;t<e.length;t++){const n=e[t],s=n.getElementsByClassName("blockify-pattern-iframe")[0];n.style.height=s.offsetHeight/3+"px"}};document.addEventListener("DOMContentLoaded",e),window.addEventListener("resize",e)})();

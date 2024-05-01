@@ -14,16 +14,25 @@
     "phpcs": "phpcs -s",
     "phpcbf": "phpcbf",
     "pot": "wp i18n make-pot ./ languages/pattern-editor.pot --exclude='wp,wp-content,vendor,tests,node_modules,build,src'",
-    "zip": "rm -Rf ../../pattern-editor.zip && zip -r ../../pattern-editor.zip assets/ includes/ languages/ pattern-editor.php readme.txt"
+    "zip": "rm -Rf ../../pattern-editor.zip && zip -r ../../pattern-editor.zip assets/ includes/ languages/ pattern-editor.php readme.txt",
+    "dev": "COMPOSER=composer-dev.json composer update",
+    "delete-git": "echo [WARNING] Deleting all .git directories from dependencies && rm -rf vendor/**/**/.git",
+    "dist": "composer update --no-dev && composer run delete-git && rm -rf vendor/bin"
   },
   "config": {
     "allow-plugins": {
+      "composer/installers": true,
       "dealerdirect/phpcodesniffer-composer-installer": true
     },
+    "optimize-autoloader": true,
     "sort-packages": true
   },
+  "minimum-stability": "dev",
   "require": {
-    "php": ">=7.4"
+    "php": ">=7.4",
+    "blockify/dom": "dev-main",
+    "blockify/utilities": "dev-main",
+    "fieldify/fields": "dev-main"
   },
   "require-dev": {
     "dealerdirect/phpcodesniffer-composer-installer": "^0.7",

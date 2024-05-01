@@ -3,8 +3,8 @@ Contributors: blockifywp
 Donate link: https://blockifywp.com/
 Tags: pattern, editor, block, gutenberg, block editor, blockify
 Requires at least: 6.3
-Tested up to: 6.4
-Stable tag: trunk
+Tested up to: 6.5
+Stable tag: 0.2.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -62,6 +62,12 @@ This plugin is designed to be used by developers and theme authors.
 3. Edit pattern screen
 
 == ChangeLog ==
+
+= 0.2.0 - 1 May 2024 =
+
+* Add: Template part block
+* Add: Static pattern block
+* Add: Post content block
 
 = 0.1.1 - 29 March 2024 =
 

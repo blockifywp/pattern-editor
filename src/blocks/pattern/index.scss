@@ -1,0 +1,57 @@
+.wp-block-blockify-pattern {
+	width: 100% !important;
+	max-width: 100% !important;
+}
+
+.blockify-pattern {
+	--wp--style--global--wide-size: 90%;
+	--wp--style--global--content-size: min(calc(100% - var(--wp--preset--spacing--lg, 2rem)), 720px);
+
+	margin-top: var(--wp--preset--spacing--sm);
+
+	.alignfull > *,
+	* .alignwide,
+	header > .alignfull,
+	header > .alignfull > *,
+	footer > .alignfull,
+	main > .alignfull > * {
+		width: 100% !important;
+		max-width: var(--wp--style--global--wide-size) !important;
+		margin-left: auto !important;
+		margin-right: auto !important;
+	}
+
+	header > .alignfull {
+		max-width: 100% !important;
+	}
+}
+
+.blockify-pattern-iframe {
+	position: relative;
+	width: 1200px;
+	max-width: 300%;
+	transform: scale(.33333) translateY(-100%) translateX(-100%);
+	background: var(--wp--preset--color--neutral-0);
+	border-radius: var(--wp--custom--border--radius);
+	pointer-events: none;
+	user-select: none;
+
+	.blockify-pattern:not(.is-page-pattern) & {
+		display: flex;
+		align-items: center;
+	}
+
+	&[style*="height"] {
+		overflow: hidden;
+	}
+}
+
+.blockify-pattern-settings {
+
+	.components-panel__row {
+
+		> div {
+			width: 100%;
+		}
+	}
+}

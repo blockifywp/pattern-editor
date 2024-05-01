@@ -1,0 +1,37 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "blockify/pattern",
+  "title": "Pattern",
+  "description": "Displays a server side rendered block pattern.",
+  "icon": "grid-view",
+  "textdomain": "pattern-editor",
+  "category": "pattern-editor",
+  "keywords": [
+    "links"
+  ],
+  "attributes": {
+    "slug": {
+      "type": "string"
+    },
+    "iframe": {
+      "type": "boolean"
+    },
+    "url": {
+      "type": "string"
+    },
+    "height": {
+      "type": "string"
+    },
+    "preview": {
+      "type": "boolean"
+    }
+  },
+  "supports": {
+    "alignWide": true,
+    "className": true
+  },
+  "editorScript": "file:index.js",
+  "editorStyle": "file:index.css",
+  "viewScript": "file:view.js"
+}

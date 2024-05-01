@@ -1,0 +1,64 @@
+{
+  "name": "blockify/pattern-editor",
+  "description": "Block Patterns Editor",
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "Blockify",
+      "homepage": "https://blockifywp.com"
+    }
+  ],
+  "type": "wordpress-plugin",
+  "scripts": {
+    "install:phpcs": "Dealerdirect\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\Plugin::run",
+    "phpcs": "phpcs -s",
+    "phpcbf": "phpcbf",
+    "pot": "wp i18n make-pot ./ languages/pattern-editor.pot --exclude='wp,wp-content,vendor,tests,node_modules,build,src'",
+    "zip": "rm -Rf ../../pattern-editor.zip && zip -r ../../pattern-editor.zip assets/ includes/ languages/ pattern-editor.php readme.txt",
+    "dev": "COMPOSER=composer-dev.json composer update",
+    "delete-git": "echo [WARNING] Deleting all .git directories from dependencies && rm -rf vendor/**/**/.git",
+    "dist": "composer update --no-dev && composer run delete-git && rm -rf vendor/bin"
+  },
+  "config": {
+    "allow-plugins": {
+      "composer/installers": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    },
+    "optimize-autoloader": true,
+    "sort-packages": true
+  },
+  "minimum-stability": "dev",
+  "require": {
+    "php": ">=7.4",
+    "blockify/dom": "dev-main",
+    "blockify/utilities": "dev-main",
+    "fieldify/fields": "dev-main"
+  },
+  "require-dev": {
+    "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
+    "wp-coding-standards/wpcs": "^2.3"
+  },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../../../../vendor/blockify/dom",
+      "options": {
+        "symlink": true
+      }
+    },
+    {
+      "type": "path",
+      "url": "../../../../vendor/blockify/utilities",
+      "options": {
+        "symlink": true
+      }
+    },
+    {
+      "type": "path",
+      "url": "../../../../vendor/fieldify/fields",
+      "options": {
+        "symlink": true
+      }
+    }
+  ]
+}
