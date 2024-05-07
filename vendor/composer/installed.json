@@ -7,15 +7,15 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/blockifywp/dom.git",
-                "reference": "91a9fd95eb701f4a8e432b48ce41dc483c7feb4d"
+                "reference": "900eaaedfc1c21887b2775eb5673c21f8af9f6ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/blockifywp/dom/zipball/91a9fd95eb701f4a8e432b48ce41dc483c7feb4d",
-                "reference": "91a9fd95eb701f4a8e432b48ce41dc483c7feb4d",
+                "url": "https://api.github.com/repos/blockifywp/dom/zipball/900eaaedfc1c21887b2775eb5673c21f8af9f6ab",
+                "reference": "900eaaedfc1c21887b2775eb5673c21f8af9f6ab",
                 "shasum": ""
             },
-            "time": "2024-05-01T09:43:28+00:00",
+            "time": "2024-05-01T10:32:37+00:00",
             "default-branch": true,
             "type": "library",
             "installation-source": "dist",
@@ -94,18 +94,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/blockifywp/utilities.git",
-                "reference": "23d4829e0b0674094c9b394f5cdde1b69d1a0285"
+                "reference": "d0c6d98d233480b27e9624f6f0ddcb5e2d54f416"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/blockifywp/utilities/zipball/23d4829e0b0674094c9b394f5cdde1b69d1a0285",
-                "reference": "23d4829e0b0674094c9b394f5cdde1b69d1a0285",
+                "url": "https://api.github.com/repos/blockifywp/utilities/zipball/d0c6d98d233480b27e9624f6f0ddcb5e2d54f416",
+                "reference": "d0c6d98d233480b27e9624f6f0ddcb5e2d54f416",
                 "shasum": ""
             },
             "require": {
                 "psr/container": "^2.0@dev"
             },
-            "time": "2024-04-29T03:12:42+00:00",
+            "time": "2024-05-03T17:35:30+00:00",
             "default-branch": true,
             "type": "library",
             "installation-source": "dist",

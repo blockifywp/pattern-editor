@@ -6,6 +6,7 @@ namespace Blockify\Utilities;
 
 use function _deprecated_function;
 use function capital_P_dangit;
+use function esc_html;
 use function implode;
 use function lcfirst;
 use function ltrim;
@@ -173,7 +174,7 @@ class Str {
 	public static function title_case( string $string, array $search = [ '-', '_' ] ): string {
 		$title_case = trim( ucwords( str_replace( $search, ' ', $string ) ) );
 
-		return capital_P_dangit( $title_case );
+		return esc_html( capital_P_dangit( $title_case ) );
 	}
 
 	/**

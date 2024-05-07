@@ -42,7 +42,12 @@ class Pattern {
 	 * @return void
 	 */
 	public static function register_from_file( string $file ): void {
-		$pattern    = self::parse_file( $file );
+		$pattern = self::parse_file( $file );
+
+		if ( ! isset( $pattern['slug'] ) ) {
+			return;
+		}
+
 		$categories = $pattern['categories'] ?? [];
 
 		foreach ( $categories as $category ) {

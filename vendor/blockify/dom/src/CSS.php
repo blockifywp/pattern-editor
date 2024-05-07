@@ -59,11 +59,11 @@ class CSS {
 	 *
 	 * @param ?string $custom_property Custom property value to format.
 	 *
-	 * @return string
+	 * @return ?string
 	 */
-	public static function format_custom_property( ?string $custom_property ): string {
+	public static function format_custom_property( ?string $custom_property ): ?string {
 		if ( ! $custom_property ) {
-			return '';
+			return $custom_property;
 		}
 
 		if ( str_contains( $custom_property, 'var:' ) ) {

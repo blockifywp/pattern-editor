@@ -3,7 +3,7 @@
         'name' => 'blockify/pattern-editor',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '13c6e7ee2919e72234597aa8d61a111d4df94528',
+        'reference' => 'ee8178abbf7db830af9a6e5021ef9cd7c79456c0',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'blockify/dom' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '91a9fd95eb701f4a8e432b48ce41dc483c7feb4d',
+            'reference' => '900eaaedfc1c21887b2775eb5673c21f8af9f6ab',
             'type' => 'library',
             'install_path' => __DIR__ . '/../blockify/dom',
             'aliases' => array(
@@ -35,7 +35,7 @@
         'blockify/pattern-editor' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '13c6e7ee2919e72234597aa8d61a111d4df94528',
+            'reference' => 'ee8178abbf7db830af9a6e5021ef9cd7c79456c0',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -44,7 +44,7 @@
         'blockify/utilities' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '23d4829e0b0674094c9b394f5cdde1b69d1a0285',
+            'reference' => 'd0c6d98d233480b27e9624f6f0ddcb5e2d54f416',
             'type' => 'library',
             'install_path' => __DIR__ . '/../blockify/utilities',
             'aliases' => array(
